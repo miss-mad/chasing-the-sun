@@ -1,5 +1,41 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  /* display: flex; */
+  background-color: rgb(230, 239, 243);
+}
+
+/*   .card-body {
+    justify-content: center;
+  } */
+
+.container {
+  width: 100%;
+  /* background: linear-gradient(#e66465, #9198e5); */
+  background: linear-gradient(.25turn, rgb(228, 184, 6), rgb(122, 122, 220));
+  border-radius: 5px;
+}
+
+.display-4 {
+  text-align: center;
+}
+
+/* form {
+  padding-left: 8px;
+} */
+
+/* .form-control {
+  width: 20%;
+} */
+
+.btn {
+  width: 80%;
+}
+
+.search {
+  width: 20%;
+}
