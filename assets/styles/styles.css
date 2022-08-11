@@ -15,27 +15,10 @@ body {
 
 .container {
   width: 100%;
-  /* background: linear-gradient(#e66465, #9198e5); */
-  background: linear-gradient(.25turn, rgb(228, 184, 6), rgb(122, 122, 220));
+  background: linear-gradient(0.25turn, rgb(228, 184, 6), rgb(122, 122, 220));
   border-radius: 5px;
 }
 
 .display-4 {
   text-align: center;
-}
-
-/* form {
-  padding-left: 8px;
-} */
-
-/* .form-control {
-  width: 20%;
-} */
-
-.btn {
-  width: 80%;
-}
-
-.search {
-  width: 20%;
 }

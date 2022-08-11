@@ -1,30 +1,79 @@
-// unique key made within my Open Weather Map account
-var apiKey = "c3b19024c0144f189152c979eec57ee8";
+// function to retrieve the user input from the search bar
+function getUserInput(event) {
+  // prevents the default behavior that the html button element has of refreshing the page after clicking
+  event.preventDefault();
 
-// you can make an API call using just the city name or by using a combination of the city name, state code, and country code
-// accept user input and store in the city variable
-// var city = "";
-// console.log(city);
+  // retrieves the text (value) that the user puts into the search bar and trims it (takes out any extra spaces before or after the word(s))
+  var userInput = $("#searchInput").val().trim();
+  // places user input in local storage for displaying later
+  localStorage.setItem("search input", userInput);
+  console.log("userInput: ", userInput);
 
-var button = $("#button");
-console.log(button);
-button.on("click", returnSearchInput);
-
-function returnSearchInput() {
-  console.log("function is working");
-  var searchInput = $("#searchInput").val().trim();
-  console.log(searchInput);
-  if (searchInput === "") {
-    console.log("empty string");
-  } else {
-    console.log("not an empty string");
-  }
-  return searchInput;
+  // calls another function, apiCall(), detailed below, and passes in two parameters
+  apiCall(userInput, "currentWeather");
 }
 
-returnSearchInput();
+// function to execute the API call for the OpenWeather API, passing in two parameters
+function apiCall(userInput, urlType) {
+  var queryURL = "";
 
+  // two API calls within OpenWeather are used, so this determines which is currently being used right now to determine which information to display - current or future forecast
+  if (urlType === "currentWeather") {
+    queryURL = "http://api.openweathermap.org/data/2.5/weather";
+  } else if (urlType === "dailyForecast") {
+    queryURL = "WHAT EVER THE DAILY FORECAST URL IS GOES HERE";
+  } else {
+    queryURL = "http://api.openweathermap.org/data/2.5/weather";
+  }
 
+  // unique key made within my Open Weather Map account
+  var apiKey = "c3b19024c0144f189152c979eec57ee8";
+  var city = userInput;
+
+  // separating the query terms from the base URL
+  var parameters = `?q=${city}&appid=${apiKey}`;
+
+  // adding the query terms to the base URL
+  queryURL = queryURL + parameters;
+
+  // using the server-side API Fetch to return the API call
+  fetch(queryURL)
+    .then(function (response) {
+      console.log(response);
+      // if statement checks if the HTTP status code dictates that the status is ok (between 200-299) and if not, give the user an error so that they know there is an error
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error(response.statusText);
+    })
+
+    .then(function (data) {
+      console.log("Weather Data: ", data);
+    })
+    // .catch is for catching user errors if they misspell or enter a nonexistent city
+    .catch((error) => {
+      console.log("Error from API: ", error);
+      //   alert("ERROR - please make sure you have spelled the city correctly")
+    });
+}
+
+// function to display past cities that user has searched for by retrieving data from local storage
+function displaySearchHistory() {
+  // clears search bar after pressing the search button
+  $("#searchInput").val("");
+  // gets the search input item from local storage
+  localStorage.getItem("searchInput");
+
+  //   searching.text(searchInput);
+  //   searching.append(searchInput);
+}
+
+// click listeners on the search button so that the below named functions will execute when user clicks "search"
+var button = $(".btn");
+button.on("click", getUserInput);
+button.on("click", displaySearchHistory);
+
+// you can make an API call using just the city name or by using a combination of the city name, state code, and country code
 // specify state and country variables in the API call bc some states or countries might have cities of the same name
 
 // after making variables to store the API key and the user input for the city, you can construct a query URL, which you'll use to make the API call
@@ -48,21 +97,17 @@ returnSearchInput();
 // then, we concatenate the other required parameter, appid=, where we'll add the API key specific to the application
 // finally, we concatenate the APIKey variable that contains the key we obtained at the beginning of this guide
 
-// var queryURL = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`;
 // Now that you have constructed a variable to hold your query URL, you can implement it in an API call using the Fetch API!
 
 // once query URL is made, you need to call the Fetch API to pass the query URL in as a parameter
 // be sure to first adjust app to accept user input and store it in the city variable
-// fetch(queryURL)
-//   .then(function (response) {
-//     if (!response.ok) {
-//       console.log(response.status);
-//     //   document.location.replace("./404.html");
-//     } else {
-//       return response.json();
-//     }
-//   })
-//   .then(function (data) {
-//     console.log(data);
-//   });
+
 // once app is working, we can use the response data that's returned by the query in the application (this functions the same way as an API that doesn't require an API key)
+
+/*
+    1. User types in city DONE
+    2. We capture value of city DONE
+    3. We put city into the query string
+    4. We use fetch data using the query string that we just built
+    5. We take the data that is returned and we display that to the page
+ */
