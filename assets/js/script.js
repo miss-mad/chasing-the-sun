@@ -1,3 +1,4 @@
+var button = $(".btn");
 // test cities
 // var userInput = ["atlanta", "toronto", "test"];
 // console.log(userInput.split(","));
@@ -6,7 +7,7 @@
 function getUserInput(event) {
   // prevents the default behavior that the html button element has of refreshing the page after clicking
   event.preventDefault();
-  
+
   // retrieves the text (value) that the user puts into the search bar and trims it (takes out any extra spaces before or after the word(s))
   var userInput = $("#searchInput").val().trim();
 
@@ -62,10 +63,75 @@ function apiCall(userInput, urlType) {
       console.log("Weather Data: ", data);
     })
     // .catch is for catching user errors if they misspell or enter a nonexistent city
-    .catch((error) => {
+    .catch(function (error) {
       console.log("Error from API: ", error);
-      //   alert("ERROR - please make sure you have spelled the city correctly")
+      alert("ERROR - please make sure you have spelled the city correctly");
     });
+}
+
+function displayCurrentWeather() {
+  // make a box (div) for current weather for searched city
+  // city + date appears in bold as title/header
+  // weather icon appears next to city + date
+  // four conditions follow as a list or grid:
+  // temp: degrees F
+  // wind: MPH
+  // humidity: %
+  // uv index: + color coded for danger
+
+  var currentWeatherDiv = $("<div>");
+  currentWeatherDiv.css("width", "DECIDE WIDTH");
+
+  var currentWeatherTitle = $("<h3>");
+  currentWeatherTitle.css("font-weight", "bold");
+  currentWeatherTitle.text("INSERT CITY/USER INPUT + DATE");
+
+  var currentWeatherIcon = $("<a>");
+  currentWeatherIcon.css("INSERT WEATHER ICON");
+
+  var currentWeatherConditionsUl = $("<ul>");
+  currentWeatherConditionsUl.attr("class", "list-group list-group-flush");
+
+  var currentWeatherConditionsLi = $("<li>");
+  currentWeatherConditionsLi.attr("class", "list-group-item");
+
+  var currentWeatherTemp = $("<li>");
+  var currentWeatherWind = $("<li>");
+  var currentWeatherHumidity = $("<li>");
+  var currentWeatherUVIndex = $("<li>");
+
+  currentWeatherConditionsLi.append(
+    currentWeatherTemp,
+    currentWeatherWind,
+    currentWeatherHumidity,
+    currentWeatherUVIndex
+  );
+
+  currentWeatherConditionsUl.append(currentWeatherConditionsLi);
+  currentWeatherDiv.append(currentWeatherTitle, currentWeatherIcon, currentWeatherConditionsUl);
+}
+
+function displayDailyForecast() {
+  // make a box (div) for 5-day forecast for searched city
+  // create text "5-Day Forecast" in bold as title
+  // create 5 boxes that show each future day for 5 days
+  // within each box:
+  // date in bold at top
+  // weather icon
+  // temp: degrees F
+  // wind: MPH
+  // humidity: %
+
+  var dailyForecastDiv = $("<div>");
+  dailyForecastDiv.css("DECIDE CSS FOR FORECAST BOX");
+
+  var dailyForecastTitle = $("<h3>");
+  dailyForecastTitle.css("font-weight", "bold");
+
+  var dailyForecastFiveDayDivs = $("<div>");
+  $(dailyForecastFiveDayDivs).each(function() {
+
+  });
 }
 
 // function to display past cities that user has searched for by retrieving data from local storage
@@ -94,7 +160,7 @@ function displaySearchHistory() {
   searchHistoryLi.attr("class", "list-group-item");
 
   // need to convert strings (cities) to array with .split()
-  // then jquery for each method the array
+  // then jquery for each method in the array
   // userInput.split("");
   // console.log(userInput);
   // $(userInput).each(function(){
@@ -108,7 +174,6 @@ function displaySearchHistory() {
 }
 
 // click listeners on the search button so that the below named functions will execute when user clicks "search"
-var button = $(".btn");
 button.on("click", getUserInput);
 button.on("click", displaySearchHistory);
 
