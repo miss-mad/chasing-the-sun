@@ -5,13 +5,8 @@
 }
 
 body {
-  /* display: flex; */
   background-color: rgb(230, 239, 243);
 }
-
-/*   .card-body {
-    justify-content: center;
-  } */
 
 .container {
   width: 100%;

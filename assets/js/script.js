@@ -1,10 +1,21 @@
+// test cities
+// var userInput = ["atlanta", "toronto", "test"];
+// console.log(userInput.split(","));
+
 // function to retrieve the user input from the search bar
 function getUserInput(event) {
   // prevents the default behavior that the html button element has of refreshing the page after clicking
   event.preventDefault();
-
+  
   // retrieves the text (value) that the user puts into the search bar and trims it (takes out any extra spaces before or after the word(s))
   var userInput = $("#searchInput").val().trim();
+
+  if (!userInput) {
+    alert("Please enter a city name");
+    // need the return keyword to tell the computer not to execute the rest of the function if there is no value in the search bar. without this keyword, the function will replace what is already in local storage with the blank value
+    return;
+  }
+
   // places user input in local storage for displaying later
   localStorage.setItem("search input", userInput);
   console.log("userInput: ", userInput);
@@ -40,7 +51,7 @@ function apiCall(userInput, urlType) {
   fetch(queryURL)
     .then(function (response) {
       console.log(response);
-      // if statement checks if the HTTP status code dictates that the status is ok (between 200-299) and if not, give the user an error so that they know there is an error
+      // this if statement checks if the HTTP status code dictates that the status is ok (between 200-299) and if not, give the user an error so that they know there is an error
       if (response.ok) {
         return response.json();
       }
@@ -59,13 +70,41 @@ function apiCall(userInput, urlType) {
 
 // function to display past cities that user has searched for by retrieving data from local storage
 function displaySearchHistory() {
-  // clears search bar after pressing the search button
+  // var userInput = $("#searchInput").val().trim();
+  // clears search bar after user clicks the search button
   $("#searchInput").val("");
   // gets the search input item from local storage
-  localStorage.getItem("searchInput");
+  localStorage.getItem("userInput");
 
-  //   searching.text(searchInput);
-  //   searching.append(searchInput);
+  // creates the search history display card with jQuery using bootstrap classes
+  var searchHistoryDiv = $("<div>");
+  searchHistoryDiv.attr("class", "card text-center");
+  searchHistoryDiv.css("width", "18rem");
+
+  // creates the first row of the bootstrap card to be a header that gives a title to the search history
+  var searchHistoryHeader = $("<div>");
+  searchHistoryHeader.text("Search History");
+
+  // creates the unordered list element for the list items to be nested into
+  var searchHistoryUl = $("<ul>");
+  searchHistoryUl.attr("class", "list-group list-group-flush");
+
+  // creates the list items and loops through local storage to add each city searched, as it's searched
+  var searchHistoryLi = $("<li>");
+  searchHistoryLi.attr("class", "list-group-item");
+
+  // need to convert strings (cities) to array with .split()
+  // then jquery for each method the array
+  // userInput.split("");
+  // console.log(userInput);
+  // $(userInput).each(function(){
+
+  // })
+
+  // not sure if order should be reversed and also not sure if I should append everything to div instead of stair-stepping
+  searchHistoryDiv.append(searchHistoryHeader);
+  searchHistoryHeader.append(searchHistoryUl);
+  searchHistoryUl.append(searchHistoryLi);
 }
 
 // click listeners on the search button so that the below named functions will execute when user clicks "search"
