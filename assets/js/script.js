@@ -1,9 +1,6 @@
-//CHANGE ALL HTTP TO HTTPS
+//CHANGE ALL HTTP TO HTTPS for Github pages
 
 var button = $(".btn");
-// test cities
-// var userInput = ["atlanta", "toronto", "test"];
-// console.log(userInput.split(","));
 
 // function to retrieve the user input from the search bar
 function getUserInput(event) {
@@ -34,7 +31,7 @@ function apiCall(incomingInformationFromMultipleSources, urlType) {
   // unique key made within my Open Weather Map account
   var apiKey = "c3b19024c0144f189152c979eec57ee8";
 
-  // two API calls within OpenWeather are used, so this determines which is currently being used right now to determine which information to display - current or future forecast
+  // three API calls within OpenWeather are used, so this determines which call is currently being used to determine which information to display - current weather, UV index or future forecast
   if (urlType === "currentWeather") {
     var city = incomingInformationFromMultipleSources;
 
@@ -52,7 +49,6 @@ function apiCall(incomingInformationFromMultipleSources, urlType) {
 
     queryURL = "https://api.openweathermap.org/data/3.0/onecall";
     // separating the query terms from the base URL
-
     var parametersCurrentWeatherUVIndex = `?lat=${lat}&lon=${lon}&appid=${apiKey}`;
 
     // adding the query terms to the base URL
@@ -64,8 +60,9 @@ function apiCall(incomingInformationFromMultipleSources, urlType) {
     var lon = incomingInformationFromMultipleSources.lon;
 
     queryURL = "https://api.openweathermap.org/data/2.5/forecast";
+    // separating the query terms from the base URL
     var parametersDailyForecast = `?lat=${lat}&lon=${lon}&appid=${apiKey}`;
-
+    // adding the query terms to the base URL
     queryURL = queryURL + parametersDailyForecast;
   }
 
@@ -80,9 +77,11 @@ function apiCall(incomingInformationFromMultipleSources, urlType) {
       throw new Error(response.statusText);
     })
 
+    // checks base URL type of the API call to determine which information to display in what order
     .then(function (data) {
       console.log("Weather Data: ", data);
 
+      // because I went the current weather data (temp, humidity, and wind) to all display at the same time and in the same list as UV Index, the below if statements make the apiCall() function run again to get both sets of data before displaying the future 5-day forecast
       if (urlType === "currentWeather") {
         apiCall(data, "getUVIndex");
       }
@@ -92,14 +91,15 @@ function apiCall(incomingInformationFromMultipleSources, urlType) {
       }
 
       if (urlType === "dailyForecast") {
-        // filter the arry from 40 to 5
-        const fiveDayForcastArray = data.list.filter((day, index) => {
+        // filter the array from 40 to 5
+        const fiveDayForcastArray = data.list.filter(function (day, index) {
           if (day.dt_txt.includes("12:00:00")) {
             return day;
           }
         });
 
-        fiveDayForcastArray.forEach((day) => {
+        // jQuery forEach method to loop through the displayDailyForecast() function for each day in the fiveDayForcastArray, which has been filtered down to show only 5 days at 12PM from the original 40 entries
+        $(fiveDayForcastArray).each(function (day) {
           displayDailyForecast(day);
         });
       }
@@ -111,43 +111,46 @@ function apiCall(incomingInformationFromMultipleSources, urlType) {
     });
 }
 
+// function to convert given Kelvin temperature from OpenWeather to Fahrenheit
 function convertTempKToF(temp) {
   return ((temp - 273.15) * 9) / 5 + 32;
 }
 
 function displayCurrentWeather(data) {
-  // make a box (div) for current weather for searched city
-  // city + date appears in bold as title/header
-  // weather icon appears next to city + date
-  // four conditions follow as a list or grid:
-  // temp: degrees F
-  // wind: MPH
-  // humidity: %
-  // uv index: + color coded for danger
-
   var userInput = $("#searchInput").val().trim();
   console.log(userInput);
 
   var todaysDate = moment().format("M/D/YYYY");
 
+  // attribute selector by HTML ID for the div holding the current weather for searched city
   var currentWeatherDiv = $("#currentWeather");
 
+  // city + date appears in bold as title/header
   var currentWeatherTitle = $("<h3>");
   currentWeatherTitle.css("font-weight", "bold");
   currentWeatherTitle.text(userInput + " " + todaysDate);
 
+  // weather icon appears next to city + date
   var currentWeatherIcon = $("<img>");
   var weatherIconCode = data.current.weather[0].icon;
   var weatherIconUrl =
     "http://openweathermap.org/img/wn/" + weatherIconCode + ".png";
   currentWeatherIcon.attr("src", weatherIconUrl);
 
+  // create <ul> and <li> elements to hold the weather data list
   var currentWeatherConditionsUl = $("<ul>");
   currentWeatherConditionsUl.attr("class", "list-group list-group-flush");
 
   var currentWeatherConditionsLi = $("<li>");
   currentWeatherConditionsLi.attr("class", "list-group-item");
 
+  // four conditions follow as a list:
+  // temp: degrees F
+  // wind: MPH
+  // humidity: %
+  // uv index: + uvIndex() function to color coded for danger
+
+  // toFixed() reduces the temperature decimal to 2 places
   var currentWeatherTemp = $("<li>").text(
     "Temp: " + convertTempKToF(data.current.temp).toFixed(2) + " °F"
   );
@@ -166,6 +169,7 @@ function displayCurrentWeather(data) {
   uvIndexColorDiv.css("border-radius", "5px");
   uvIndexColorDiv.css("color", "white");
 
+  // weather has a UV Index scale of 1-2 = green, 3-5 = moderate, 6-7 = severe, etc. and does not account for any index between 2-3, or 5-6, and so on. the below if/else/if statements have to account for the gap in numbers
   function uvIndex() {
     if (uvIndexNumber <= 2.5) {
       uvIndexColorDiv.css("background-color", "green");
@@ -181,6 +185,7 @@ function displayCurrentWeather(data) {
   }
   uvIndex();
 
+  // all created elements must be added on to an existing element in order to display on the page
   currentWeatherUVIndexLi.append(uvIndexColorDiv);
 
   currentWeatherConditionsLi.append(
@@ -198,28 +203,20 @@ function displayCurrentWeather(data) {
     currentWeatherConditionsUl
   );
 
+  // runs through the apiCall() function again to now display the 5-day forecast (function below)
   apiCall(data, "dailyForecast");
 }
 
 function displayDailyForecast(day) {
-  // make a box (div) for 5-day forecast for searched city
-  // create text "5-Day Forecast" in bold as title
-  // create 5 boxes that show each future day for 5 days
-  // within each box:
-  // date in bold at top
-  // weather icon
-  // temp: degrees F
-  // wind: MPH
-  // humidity: %
-
-  // console.log("DATA: ", data);
-
+  // attribute selector by HTML ID for the div holding the 5-day future forecast for searched city
   var dailyForecastDiv = $("#dailyForecast");
 
+  // create a box that show each future day for 5 days (loops 5 times because of forEach method on the filtered array within the fetch within the apiCall() function)
   var dailyForecastFiveDayDivs = $("<div>");
   dailyForecastFiveDayDivs.attr("class", "col-2");
   dailyForecastFiveDayDivs.css("padding", "8px");
 
+  // create <ul> and <li> elements to hold the weather data list
   var dailyForecastFiveDayUl = $("<ul>");
   dailyForecastFiveDayUl.attr("class", "list-group list-group-flush");
 
@@ -227,17 +224,25 @@ function displayDailyForecast(day) {
   dailyForecastFiveDayLi.attr("class", "list-group-item");
   dailyForecastFiveDayLi.css("list-style-type", "none");
 
+  // this shows the next 5 days' dates as a result of the forEach method that filters the forecast data to only show a data set for one time snapshot for the next 5 days
   var futureDate = $("<li>").text(day.dt_txt);
   futureDate.css("font-weight", "bold");
   futureDate.split("0");
   console.log(futureDate);
 
+  // weather icon appears for that day's forecast
   var dailyForecastFiveDayIcon = $("<img>");
   var weatherIconCode = day.weather[0].icon;
   var weatherIconUrl =
     "http://openweathermap.org/img/wn/" + weatherIconCode + ".png";
   dailyForecastFiveDayIcon.attr("src", weatherIconUrl);
 
+  // three conditions follow as a list:
+  // temp: degrees F
+  // wind: MPH
+  // humidity: %
+
+  // toFixed() reduces the temperature decimal to 2 places
   var dailyForecastFiveDayTemp = $("<li>").text(
     "Temp: " + convertTempKToF(day.main.temp).toFixed(2) + " °F"
   );
@@ -249,6 +254,7 @@ function displayDailyForecast(day) {
     "Humidity: " + day.main.humidity + "%"
   );
 
+  // all created elements must be added on to an existing element in order to display on the page
   dailyForecastFiveDayLi.append(
     futureDate,
     dailyForecastFiveDayIcon,
@@ -293,42 +299,3 @@ function displaySearchHistory() {
 // click listeners on the search button so that the below named functions will execute when user clicks "search"
 button.on("click", getUserInput);
 button.on("click", displaySearchHistory);
-
-// you can make an API call using just the city name or by using a combination of the city name, state code, and country code
-// specify state and country variables in the API call bc some states or countries might have cities of the same name
-
-// after making variables to store the API key and the user input for the city, you can construct a query URL, which you'll use to make the API call
-// use URL associated with Current Weather Data
-// to use other data points from the API, use the URL listed in that section of the documentation
-
-// example of how to make an API call using just the city name and replace URL placeholders with created variables:
-
-// look at parameters section of the documentation (after API call section)
-// parameters are the variable search terms that you can add to an API call to specify the data requested
-// 2 are required: q and appid
-// q = query parameter, where you add the city variable
-// appid = the application id or key, where you add the API key variable
-
-// new variable that concatenates the OpenWeather Current Weather Data URL + the necessary variables
-// http://api.openweathermap.org/data/2.5/weather is the base URL for calling the Current Weather Data API
-// the question mark (?) marks the boundary between the base URL of the API call and the query terms of the API call
-// q= is the query parameter, where we can add any user input to specify the data that we want to request in the API call. The value assigned to this parameter is called the query string
-// following the query parameter, we concatenate the user input, which is stored in the variable city. This is the query string assigned to the query parameter
-// the ampersand character (&) indicates that we're adding another parameter after the query parameter
-// then, we concatenate the other required parameter, appid=, where we'll add the API key specific to the application
-// finally, we concatenate the APIKey variable that contains the key we obtained at the beginning of this guide
-
-// Now that you have constructed a variable to hold your query URL, you can implement it in an API call using the Fetch API!
-
-// once query URL is made, you need to call the Fetch API to pass the query URL in as a parameter
-// be sure to first adjust app to accept user input and store it in the city variable
-
-// once app is working, we can use the response data that's returned by the query in the application (this functions the same way as an API that doesn't require an API key)
-
-/*
-    1. User types in city DONE
-    2. We capture value of city DONE
-    3. We put city into the query string
-    4. We use fetch data using the query string that we just built
-    5. We take the data that is returned and we display that to the page
- */
