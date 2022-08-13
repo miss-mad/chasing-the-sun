@@ -44,9 +44,26 @@ Collaborators:
 
 
 
+
 List of resources used:
 
+https://coding-boot-camp.github.io/full-stack/apis/how-to-use-api-keys
 
+https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+
+https://openweathermap.org/api/one-call-3#how
+
+https://openweathermap.org/current#call
+
+https://openweathermap.org/forecast5
+
+https://web.postman.co/workspace/3a6be0d9-6faa-4156-8ac5-a8e427e9f2a8/overview?workspaceOnboarding=show
+
+https://getbootstrap.com/docs/5.0/layout/grid/
+
+https://momentjs.com/docs/#/displaying/format/
+
+https://stackoverflow.com/questions/44177417/how-to-display-openweathermap-weather-icon
 
 ## License
 
