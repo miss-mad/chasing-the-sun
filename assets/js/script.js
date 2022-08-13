@@ -33,20 +33,24 @@ function apiCall(userInput, urlType) {
   if (urlType === "currentWeather") {
     queryURL = "http://api.openweathermap.org/data/2.5/weather";
   } else if (urlType === "dailyForecast") {
-    queryURL = "WHAT EVER THE DAILY FORECAST URL IS GOES HERE";
+    queryURL = "api.openweathermap.org/data/2.5/forecast";
   } else {
-    queryURL = "http://api.openweathermap.org/data/2.5/weather";
+    queryURL = "http://api.openweathermap.org/data/2.5/weather"; // return?
   }
 
   // unique key made within my Open Weather Map account
   var apiKey = "c3b19024c0144f189152c979eec57ee8";
   var city = userInput;
+  // var lat = ;
+  // var lon = ;
 
   // separating the query terms from the base URL
-  var parameters = `?q=${city}&appid=${apiKey}`;
+  var parametersCurrentWeather = `?q=${city}&appid=${apiKey}`;
+  // var parametersDailyForecast = `?lat=${lat}&lon=${lon}&appid=${apiKey}`;
 
   // adding the query terms to the base URL
-  queryURL = queryURL + parameters;
+  queryURL = queryURL + parametersCurrentWeather;
+  // queryURL = queryURL + parametersDailyForecast; // if statement here?
 
   // using the server-side API Fetch to return the API call
   fetch(queryURL)
@@ -61,6 +65,9 @@ function apiCall(userInput, urlType) {
 
     .then(function (data) {
       console.log("Weather Data: ", data);
+      displayCurrentWeather();
+      console.log(data.weather[0].icon); // finding icon
+      displayDailyForecast();
     })
     // .catch is for catching user errors if they misspell or enter a nonexistent city
     .catch(function (error) {
@@ -68,6 +75,16 @@ function apiCall(userInput, urlType) {
       alert("ERROR - please make sure you have spelled the city correctly");
     });
 }
+
+// function coordinatesToCityName() {
+//   var coordinatesURL = "http://api.openweathermap.org/geo/1.0/direct"
+
+//   var parametersCoordinates = `?q=${city}&limit=${limit}&appid=${apiKey}`;
+
+//   var apiKey = "c3b19024c0144f189152c979eec57ee8";
+//   var city = userInput;
+//   var limit = ;
+// }
 
 function displayCurrentWeather() {
   // make a box (div) for current weather for searched city
@@ -79,12 +96,14 @@ function displayCurrentWeather() {
   // humidity: %
   // uv index: + color coded for danger
 
-  var currentWeatherDiv = $("<div>");
-  currentWeatherDiv.css("width", "DECIDE WIDTH");
+  var todaysDate = moment().format("M/D/YYYY");
+
+  var currentWeatherDiv = $("#currentWeather");
 
   var currentWeatherTitle = $("<h3>");
+  // var currentWeatherTitle = $("#currentWeather").val(); // wrong
   currentWeatherTitle.css("font-weight", "bold");
-  currentWeatherTitle.text("INSERT CITY/USER INPUT + DATE");
+  currentWeatherTitle.text("Atlanta" + " " + todaysDate);
 
   var currentWeatherIcon = $("<a>");
   currentWeatherIcon.css("INSERT WEATHER ICON");
@@ -95,10 +114,10 @@ function displayCurrentWeather() {
   var currentWeatherConditionsLi = $("<li>");
   currentWeatherConditionsLi.attr("class", "list-group-item");
 
-  var currentWeatherTemp = $("<li>");
-  var currentWeatherWind = $("<li>");
-  var currentWeatherHumidity = $("<li>");
-  var currentWeatherUVIndex = $("<li>");
+  var currentWeatherTemp = $("<li>").text("TEMP HERE");
+  var currentWeatherWind = $("<li>").text("WIND MPH HERE");
+  var currentWeatherHumidity = $("<li>").text("HUMIDITY HERE");
+  var currentWeatherUVIndex = $("<li>").text("UV INDEX HERE");
 
   currentWeatherConditionsLi.append(
     currentWeatherTemp,
@@ -108,7 +127,11 @@ function displayCurrentWeather() {
   );
 
   currentWeatherConditionsUl.append(currentWeatherConditionsLi);
-  currentWeatherDiv.append(currentWeatherTitle, currentWeatherIcon, currentWeatherConditionsUl);
+  currentWeatherDiv.append(
+    currentWeatherTitle,
+    currentWeatherIcon,
+    currentWeatherConditionsUl
+  );
 }
 
 function displayDailyForecast() {
@@ -122,16 +145,17 @@ function displayDailyForecast() {
   // wind: MPH
   // humidity: %
 
-  var dailyForecastDiv = $("<div>");
-  dailyForecastDiv.css("DECIDE CSS FOR FORECAST BOX");
+  var dailyForecastDiv = $("#dailyForecast");
 
   var dailyForecastTitle = $("<h3>");
   dailyForecastTitle.css("font-weight", "bold");
 
   var dailyForecastFiveDayDivs = $("<div>");
-  $(dailyForecastFiveDayDivs).each(function() {
-
+  $(dailyForecastFiveDayDivs).each(function () {
+    apiCall();
   });
+
+  dailyForecastDiv.append(dailyForecastTitle, dailyForecastFiveDayDivs);
 }
 
 // function to display past cities that user has searched for by retrieving data from local storage

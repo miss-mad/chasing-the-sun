@@ -8,7 +8,8 @@ body {
   background-color: rgb(230, 239, 243);
 }
 
-.container {
+/* header styles */
+header {
   width: 100%;
   background: linear-gradient(0.25turn, rgb(228, 184, 6), rgb(122, 122, 220));
   border-radius: 5px;
@@ -17,3 +18,5 @@ body {
 .display-4 {
   text-align: center;
 }
+
+/* search bar styles */
