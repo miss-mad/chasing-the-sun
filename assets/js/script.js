@@ -12,6 +12,7 @@ function getUserInput(event) {
 
   // retrieves the text (value) that the user puts into the search bar and trims it (takes out any extra spaces before or after the word(s))
   var userInput = $("#searchInput").val().trim();
+  console.log(userInput);
 
   if (!userInput) {
     alert("Please enter a city name");
@@ -91,7 +92,6 @@ function apiCall(incomingInformationFromMultipleSources, urlType) {
       }
 
       if (urlType === "dailyForecast") {
-
         // filter the arry from 40 to 5
         const fiveDayForcastArray = data.list.filter((day, index) => {
           if (day.dt_txt.includes("12:00:00")) {
@@ -125,14 +125,16 @@ function displayCurrentWeather(data) {
   // humidity: %
   // uv index: + color coded for danger
 
+  var userInput = $("#searchInput").val().trim();
+  console.log(userInput);
+
   var todaysDate = moment().format("M/D/YYYY");
 
   var currentWeatherDiv = $("#currentWeather");
 
   var currentWeatherTitle = $("<h3>");
-  // var currentWeatherTitle = $("#currentWeather").val(); // wrong
   currentWeatherTitle.css("font-weight", "bold");
-  currentWeatherTitle.text("Atlanta" + " " + todaysDate);
+  currentWeatherTitle.text(userInput + " " + todaysDate);
 
   var currentWeatherIcon = $("<img>");
   var weatherIconCode = data.current.weather[0].icon;
@@ -147,7 +149,7 @@ function displayCurrentWeather(data) {
   currentWeatherConditionsLi.attr("class", "list-group-item");
 
   var currentWeatherTemp = $("<li>").text(
-    "Temp: " + convertTempKToF(data.current.temp).toFixed(2) + " degrees F"
+    "Temp: " + convertTempKToF(data.current.temp).toFixed(2) + " °F"
   );
   var currentWeatherWind = $("<li>").text(
     "Wind: " + data.current.wind_speed + "MPH"
@@ -155,13 +157,37 @@ function displayCurrentWeather(data) {
   var currentWeatherHumidity = $("<li>").text(
     "Humidity: " + data.current.humidity + "%"
   );
-  var currentWeatherUVIndex = $("<li>").text("UV Index: " + data.current.uvi);
+
+  var uvIndexNumber = data.current.uvi;
+  var currentWeatherUVIndexLi = $("<li>").text("UV Index: ");
+  var uvIndexColorDiv = $("<div>").text(uvIndexNumber);
+  uvIndexColorDiv.css("display", "inline");
+  uvIndexColorDiv.css("padding", "2px 4px");
+  uvIndexColorDiv.css("border-radius", "5px");
+  uvIndexColorDiv.css("color", "white");
+
+  function uvIndex() {
+    if (uvIndexNumber <= 2.5) {
+      uvIndexColorDiv.css("background-color", "green");
+    } else if (uvIndexNumber >= 2.51 && uvIndexNumber <= 5.5) {
+      uvIndexColorDiv.css("background-color", "yellow");
+    } else if (uvIndexNumber >= 5.51 && uvIndexNumber <= 7.5) {
+      uvIndexColorDiv.css("background-color", "orange");
+    } else if (uvIndexNumber >= 7.51 && uvIndexNumber <= 10.5) {
+      uvIndexColorDiv.css("background-color", "red");
+    } else {
+      uvIndexColorDiv.css("background-color", "pink");
+    }
+  }
+  uvIndex();
+
+  currentWeatherUVIndexLi.append(uvIndexColorDiv);
 
   currentWeatherConditionsLi.append(
     currentWeatherTemp,
     currentWeatherWind,
     currentWeatherHumidity,
-    currentWeatherUVIndex
+    currentWeatherUVIndexLi
   );
 
   currentWeatherConditionsUl.append(currentWeatherConditionsLi);
@@ -190,11 +216,9 @@ function displayDailyForecast(day) {
 
   var dailyForecastDiv = $("#dailyForecast");
 
-  var dailyForecastTitle = $("<h3>");
-  dailyForecastTitle.css("font-weight", "bold");
-
   var dailyForecastFiveDayDivs = $("<div>");
   dailyForecastFiveDayDivs.attr("class", "col-2");
+  dailyForecastFiveDayDivs.css("padding", "8px");
 
   var dailyForecastFiveDayUl = $("<ul>");
   dailyForecastFiveDayUl.attr("class", "list-group list-group-flush");
@@ -203,10 +227,10 @@ function displayDailyForecast(day) {
   dailyForecastFiveDayLi.attr("class", "list-group-item");
   dailyForecastFiveDayLi.css("list-style-type", "none");
 
-  // var futureDate = moment().format("M/D/YYYY");
-  // var expires = moment(date).valueOf();
-  // var expires = moment.utc(date).valueOf(); // try next
   var futureDate = $("<li>").text(day.dt_txt);
+  futureDate.css("font-weight", "bold");
+  futureDate.split("0");
+  console.log(futureDate);
 
   var dailyForecastFiveDayIcon = $("<img>");
   var weatherIconCode = day.weather[0].icon;
@@ -215,7 +239,7 @@ function displayDailyForecast(day) {
   dailyForecastFiveDayIcon.attr("src", weatherIconUrl);
 
   var dailyForecastFiveDayTemp = $("<li>").text(
-    "Temp: " + convertTempKToF(day.main.temp).toFixed(2) + " degrees F"
+    "Temp: " + convertTempKToF(day.main.temp).toFixed(2) + " °F"
   );
 
   var dailyForecastFiveDayWind = $("<li>").text(
@@ -224,9 +248,6 @@ function displayDailyForecast(day) {
   var dailyForecastFiveDayHumidity = $("<li>").text(
     "Humidity: " + day.main.humidity + "%"
   );
-
-  //   console.log(day);
-  // console.log(day.dt_text);
 
   dailyForecastFiveDayLi.append(
     futureDate,
@@ -240,7 +261,7 @@ function displayDailyForecast(day) {
 
   dailyForecastFiveDayDivs.append(dailyForecastFiveDayUl);
 
-  dailyForecastDiv.append(dailyForecastTitle, dailyForecastFiveDayDivs);
+  dailyForecastDiv.append(dailyForecastFiveDayDivs);
 }
 
 // function to display past cities that user has searched for by retrieving data from local storage
@@ -252,13 +273,9 @@ function displaySearchHistory() {
   localStorage.getItem("userInput");
 
   // creates the search history display card with jQuery using bootstrap classes
-  var searchHistoryDiv = $("<div>");
+  var searchHistoryDiv = $("#searchHistory");
   searchHistoryDiv.attr("class", "card text-center");
   searchHistoryDiv.css("width", "18rem");
-
-  // creates the first row of the bootstrap card to be a header that gives a title to the search history
-  var searchHistoryHeader = $("<div>");
-  searchHistoryHeader.text("Search History");
 
   // creates the unordered list element for the list items to be nested into
   var searchHistoryUl = $("<ul>");
@@ -268,17 +285,8 @@ function displaySearchHistory() {
   var searchHistoryLi = $("<li>");
   searchHistoryLi.attr("class", "list-group-item");
 
-  // need to convert strings (cities) to array with .split()
-  // then jquery for each method in the array
-  // userInput.split("");
-  // console.log(userInput);
-  // $(userInput).each(function(){
-
-  // })
-
   // not sure if order should be reversed and also not sure if I should append everything to div instead of stair-stepping
-  searchHistoryDiv.append(searchHistoryHeader);
-  searchHistoryHeader.append(searchHistoryUl);
+  searchHistoryDiv.append(searchHistoryUl);
   searchHistoryUl.append(searchHistoryLi);
 }
 
