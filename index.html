@@ -45,7 +45,10 @@
                   placeholder="Search for a City:"
                   aria-label="Search"
                 />
-                <button class="btn btn-outline-primary my-2 my-sm-8 btn-block">
+                <button
+                  class="btn btn-outline-primary my-2 my-sm-8 btn-block"
+                  id="mainSearchButton"
+                >
                   Search
                 </button>
               </form>
@@ -55,16 +58,37 @@
         <div class="row">
           <section class="col-4 bg-secondary my-2">
             <div class="row">
-              <div class="col" id="searchHistory">SEARCH HISTORY</div>
+              <div class="col d-flex justify-content-center">SEARCH HISTORY</div>
+            </div>
+            <div class="row">
+              <div class="col d-flex justify-content-center" id="searchHistory"></div>
             </div>
           </section>
 
           <section class="col-8 bg-warning my-2">
             <div class="row">
-              <div class="col" id="currentWeather">CURRENT WEATHER</div>
+              <div class="col my-2">CURRENT WEATHER</div>
             </div>
 
-            <div class="row"id="dailyForecast">DAILY FORECAST @ 12PM</div>
+            <div class="row">
+              <div class="col my-2">
+                <div class="row">
+                  <div class="col" id="currentWeatherTitle"></div>
+                </div>
+                <div class="row">
+                  <div class="col" id="currentWeather"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <div class="row">
+                  <div class="col">5-DAY FORECAST @ 12PM</div>
+                </div>
+                <div class="row" id="dailyForecast"></div>
+              </div>
+            </div>
           </section>
         </div>
       </main>

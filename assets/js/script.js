@@ -1,6 +1,13 @@
 //CHANGE ALL HTTP TO HTTPS for Github pages
 
-var button = $(".btn");
+var mainSearchButton = $("#mainSearchButton");
+
+
+
+
+
+
+
 
 // function to retrieve the user input from the search bar
 function getUserInput(event) {
@@ -9,6 +16,7 @@ function getUserInput(event) {
 
   // retrieves the text (value) that the user puts into the search bar and trims it (takes out any extra spaces before or after the word(s))
   var userInput = $("#searchInput").val().trim();
+
   console.log(userInput);
 
   if (!userInput) {
@@ -17,9 +25,9 @@ function getUserInput(event) {
     return;
   }
 
-  // places user input in local storage for displaying later
-  localStorage.setItem("search input", userInput);
-  console.log("userInput: ", userInput);
+  // // places user input in local storage for displaying later
+
+  saveSearchHistory(userInput);
 
   // calls another function, apiCall(), detailed below, and passes in two parameters
   apiCall(userInput, "currentWeather");
@@ -46,6 +54,9 @@ function apiCall(incomingInformationFromMultipleSources, urlType) {
   if (urlType === "getUVIndex") {
     var lat = incomingInformationFromMultipleSources.coord.lat;
     var lon = incomingInformationFromMultipleSources.coord.lon;
+
+    document.getElementById("currentWeather").innerHTML = "";
+    document.getElementById("dailyForecast").innerHTML = "";
 
     queryURL = "https://api.openweathermap.org/data/3.0/onecall";
     // separating the query terms from the base URL
@@ -83,6 +94,19 @@ function apiCall(incomingInformationFromMultipleSources, urlType) {
 
       // because I went the current weather data (temp, humidity, and wind) to all display at the same time and in the same list as UV Index, the below if statements make the apiCall() function run again to get both sets of data before displaying the future 5-day forecast
       if (urlType === "currentWeather") {
+        // city + date appears in bold as title/header
+
+        var currentCity = data.name;
+        var todaysDate = moment().format("M/D/YYYY");
+
+        var currentWeatherTitle = $("<h3>");
+        currentWeatherTitle.css("font-weight", "bold");
+        currentWeatherTitle.text(currentCity + " " + todaysDate);
+
+        var currentWeatherHeader = $("#currentWeatherTitle");
+
+        currentWeatherHeader.append(currentWeatherTitle);
+
         apiCall(data, "getUVIndex");
       }
 
@@ -92,14 +116,15 @@ function apiCall(incomingInformationFromMultipleSources, urlType) {
 
       if (urlType === "dailyForecast") {
         // filter the array from 40 to 5
-        const fiveDayForcastArray = data.list.filter(function (day, index) {
+        var fiveDayForecastArray = data.list.filter(function (day) {
           if (day.dt_txt.includes("12:00:00")) {
             return day;
           }
         });
 
-        // jQuery forEach method to loop through the displayDailyForecast() function for each day in the fiveDayForcastArray, which has been filtered down to show only 5 days at 12PM from the original 40 entries
-        $(fiveDayForcastArray).each(function (day) {
+        // jQuery forEach method to loop through the displayDailyForecast() function for each day in the fiveDayForecastArray, which has been filtered down to show only 5 days at 12PM from the original 40 entries
+
+        fiveDayForecastArray.forEach(function (day) {
           displayDailyForecast(day);
         });
       }
@@ -117,18 +142,13 @@ function convertTempKToF(temp) {
 }
 
 function displayCurrentWeather(data) {
+  console.log("TEST", data);
   var userInput = $("#searchInput").val().trim();
+  $("#searchInput").val("");
   console.log(userInput);
-
-  var todaysDate = moment().format("M/D/YYYY");
 
   // attribute selector by HTML ID for the div holding the current weather for searched city
   var currentWeatherDiv = $("#currentWeather");
-
-  // city + date appears in bold as title/header
-  var currentWeatherTitle = $("<h3>");
-  currentWeatherTitle.css("font-weight", "bold");
-  currentWeatherTitle.text(userInput + " " + todaysDate);
 
   // weather icon appears next to city + date
   var currentWeatherIcon = $("<img>");
@@ -152,10 +172,10 @@ function displayCurrentWeather(data) {
 
   // toFixed() reduces the temperature decimal to 2 places
   var currentWeatherTemp = $("<li>").text(
-    "Temp: " + convertTempKToF(data.current.temp).toFixed(2) + " °F"
+    "Temp: " + convertTempKToF(data.current.temp).toFixed(2) + "°F"
   );
   var currentWeatherWind = $("<li>").text(
-    "Wind: " + data.current.wind_speed + "MPH"
+    "Wind: " + data.current.wind_speed + " MPH"
   );
   var currentWeatherHumidity = $("<li>").text(
     "Humidity: " + data.current.humidity + "%"
@@ -197,11 +217,7 @@ function displayCurrentWeather(data) {
 
   currentWeatherConditionsUl.append(currentWeatherConditionsLi);
 
-  currentWeatherDiv.append(
-    currentWeatherTitle,
-    currentWeatherIcon,
-    currentWeatherConditionsUl
-  );
+  currentWeatherDiv.append(currentWeatherIcon, currentWeatherConditionsUl);
 
   // runs through the apiCall() function again to now display the 5-day forecast (function below)
   apiCall(data, "dailyForecast");
@@ -225,10 +241,8 @@ function displayDailyForecast(day) {
   dailyForecastFiveDayLi.css("list-style-type", "none");
 
   // this shows the next 5 days' dates as a result of the forEach method that filters the forecast data to only show a data set for one time snapshot for the next 5 days
-  var futureDate = $("<li>").text(day.dt_txt);
+  var futureDate = $("<li>").text(moment(`${day.dt_txt.split(" ")[0]}`).format("M/D/YYYY"));
   futureDate.css("font-weight", "bold");
-  futureDate.split("0");
-  console.log(futureDate);
 
   // weather icon appears for that day's forecast
   var dailyForecastFiveDayIcon = $("<img>");
@@ -244,11 +258,11 @@ function displayDailyForecast(day) {
 
   // toFixed() reduces the temperature decimal to 2 places
   var dailyForecastFiveDayTemp = $("<li>").text(
-    "Temp: " + convertTempKToF(day.main.temp).toFixed(2) + " °F"
+    "Temp: " + convertTempKToF(day.main.temp).toFixed(2) + "°F"
   );
 
   var dailyForecastFiveDayWind = $("<li>").text(
-    "Wind: " + day.wind.speed + "MPH"
+    "Wind: " + day.wind.speed + " MPH"
   );
   var dailyForecastFiveDayHumidity = $("<li>").text(
     "Humidity: " + day.main.humidity + "%"
@@ -271,31 +285,76 @@ function displayDailyForecast(day) {
 }
 
 // function to display past cities that user has searched for by retrieving data from local storage
-function displaySearchHistory() {
-  // var userInput = $("#searchInput").val().trim();
-  // clears search bar after user clicks the search button
-  $("#searchInput").val("");
+function saveSearchHistory(userInput) {
+  console.log("USER INOUT: ", userInput);
+  var searchHistoryArray = [];
+
   // gets the search input item from local storage
-  localStorage.getItem("userInput");
+  var localStorageCities = localStorage.getItem("searchHistoryArray");
 
-  // creates the search history display card with jQuery using bootstrap classes
-  var searchHistoryDiv = $("#searchHistory");
-  searchHistoryDiv.attr("class", "card text-center");
-  searchHistoryDiv.css("width", "18rem");
+  localStorageCities =
+    localStorageCities === null ? [] : JSON.parse(localStorageCities);
 
-  // creates the unordered list element for the list items to be nested into
-  var searchHistoryUl = $("<ul>");
-  searchHistoryUl.attr("class", "list-group list-group-flush");
+  if (
+    typeof localStorageCities === "object" &&
+    localStorageCities.length >= 1
+  ) {
+    searchHistoryArray = [...localStorageCities];
+  }
 
-  // creates the list items and loops through local storage to add each city searched, as it's searched
-  var searchHistoryLi = $("<li>");
-  searchHistoryLi.attr("class", "list-group-item");
+  searchHistoryArray.push(userInput);
 
-  // not sure if order should be reversed and also not sure if I should append everything to div instead of stair-stepping
-  searchHistoryDiv.append(searchHistoryUl);
-  searchHistoryUl.append(searchHistoryLi);
+  localStorage.setItem(
+    "searchHistoryArray",
+    JSON.stringify(searchHistoryArray)
+  );
+
+  console.log("cities: ", searchHistoryArray);
+
+  displaySearchHistory();
 }
 
+function displaySearchHistory() {
+  document.getElementById("searchHistory").innerHTML = "";
+  var localStorageCities = localStorage.getItem("searchHistoryArray");
+  localStorageCities =
+    localStorageCities === null ? [] : JSON.parse(localStorageCities);
+
+  console.log("cities: ", localStorageCities);
+
+  // creates the search history display card with jQuery using bootstrap classes
+
+  localStorageCities.forEach(function (city) {
+    var searchHistoryDiv = $("#searchHistory");
+    searchHistoryDiv.attr("class", "card text-center");
+    searchHistoryDiv.css("width", "18rem");
+
+    var searchHistoryButton = $("<button>");
+    searchHistoryButton.attr("class", "btn btn-secondary my-2");
+    searchHistoryButton.attr("type", "button");
+    searchHistoryButton.attr("value", city);
+    searchHistoryButton.text(city);
+    searchHistoryDiv.append(searchHistoryButton);
+  });
+}
+
+displaySearchHistory();
+
 // click listeners on the search button so that the below named functions will execute when user clicks "search"
-button.on("click", getUserInput);
-button.on("click", displaySearchHistory);
+mainSearchButton.on("click", getUserInput);
+
+function displayWeatherFromSearchHistory(event) {
+  console.log(event.target.value);
+
+  var clickedCity = event.target.value;
+
+  apiCall(clickedCity, "currentWeather");
+}
+
+var displayWeatherFromSearchHistoryButton =
+  document.querySelectorAll(".btn-secondary");
+console.log(displayWeatherFromSearchHistoryButton);
+
+displayWeatherFromSearchHistoryButton.forEach(function (node) {
+  node.addEventListener("click", displayWeatherFromSearchHistory);
+});
