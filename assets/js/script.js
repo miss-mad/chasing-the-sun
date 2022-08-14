@@ -1,13 +1,4 @@
-//CHANGE ALL HTTP TO HTTPS for Github pages
-
 var mainSearchButton = $("#mainSearchButton");
-
-
-
-
-
-
-
 
 // function to retrieve the user input from the search bar
 function getUserInput(event) {
@@ -43,7 +34,7 @@ function apiCall(incomingInformationFromMultipleSources, urlType) {
   if (urlType === "currentWeather") {
     var city = incomingInformationFromMultipleSources;
 
-    queryURL = "http://api.openweathermap.org/data/2.5/weather";
+    queryURL = "https://api.openweathermap.org/data/2.5/weather";
     // separating the query terms from the base URL
     var parametersCurrentWeather = `?q=${city}&appid=${apiKey}`;
 
@@ -81,7 +72,7 @@ function apiCall(incomingInformationFromMultipleSources, urlType) {
   fetch(queryURL)
     .then(function (response) {
       console.log(response);
-      // this if statement checks if the HTTP status code dictates that the status is ok (between 200-299) and if not, give the user an error so that they know there is an error
+      // this if statement checks if the HTTPS status code dictates that the status is ok (between 200-299) and if not, give the user an error so that they know there is an error
       if (response.ok) {
         return response.json();
       }
@@ -154,7 +145,7 @@ function displayCurrentWeather(data) {
   var currentWeatherIcon = $("<img>");
   var weatherIconCode = data.current.weather[0].icon;
   var weatherIconUrl =
-    "http://openweathermap.org/img/wn/" + weatherIconCode + ".png";
+    "https://openweathermap.org/img/wn/" + weatherIconCode + ".png";
   currentWeatherIcon.attr("src", weatherIconUrl);
 
   // create <ul> and <li> elements to hold the weather data list
@@ -241,14 +232,16 @@ function displayDailyForecast(day) {
   dailyForecastFiveDayLi.css("list-style-type", "none");
 
   // this shows the next 5 days' dates as a result of the forEach method that filters the forecast data to only show a data set for one time snapshot for the next 5 days
-  var futureDate = $("<li>").text(moment(`${day.dt_txt.split(" ")[0]}`).format("M/D/YYYY"));
+  var futureDate = $("<li>").text(
+    moment(`${day.dt_txt.split(" ")[0]}`).format("M/D/YYYY")
+  );
   futureDate.css("font-weight", "bold");
 
   // weather icon appears for that day's forecast
   var dailyForecastFiveDayIcon = $("<img>");
   var weatherIconCode = day.weather[0].icon;
   var weatherIconUrl =
-    "http://openweathermap.org/img/wn/" + weatherIconCode + ".png";
+    "https://openweathermap.org/img/wn/" + weatherIconCode + ".png";
   dailyForecastFiveDayIcon.attr("src", weatherIconUrl);
 
   // three conditions follow as a list:
