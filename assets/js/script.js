@@ -220,7 +220,7 @@ function displayDailyForecast(day) {
 
   // create a box that show each future day for 5 days (loops 5 times because of forEach method on the filtered array within the fetch within the apiCall() function)
   var dailyForecastFiveDayDivs = $("<div>");
-  dailyForecastFiveDayDivs.attr("class", "col-2");
+  dailyForecastFiveDayDivs.attr("class", "col-2.5");
   dailyForecastFiveDayDivs.css("padding", "8px");
 
   // create <ul> and <li> elements to hold the weather data list
