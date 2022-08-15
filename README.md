@@ -14,16 +14,6 @@ Find current and 5-day forecasts in any city with this simple weather finder - d
 
 This weather finder allows a traveler to find the current and future 5-day forecast for any city he or she seeks. With simple but aesthetically pleasing html and css/Bootstrap layout, JavaScript powers this app in conjunction with the 3rd party API OpenWeatherMap via a server-side API, fetch. Moment.js also makes an appearance and helps the traveler know how many dates in the future the app provides weather data. The traveler has a convenient search history list on the left side should they choose to search.
 
-💡 Remember: A README file acts like a virtual storefront to a repository. A high-quality README file explains what your application does and why you used the technologies that you did. At a bare minimum, a README needs a title and a short description explaining the what, why, and how of the project. Your README might also describe some of the challenges you faced, as well as the features you plan to implement in the future.
-
-Provide a short description explaining the what, why, and how of your project. Use the following questions as a guide:
-
-- What was your motivation?
-- Why did you build this project? (Note: the answer is not "Because it was a homework assignment.")
-- What problem does it solve?
-- What did you learn?
-- What makes your project stand out?
-
 ## Deployed Application
 
 https://miss-mad.github.io/weather-finder/
