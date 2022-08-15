@@ -1,5 +1,5 @@
 # Weather Dashboard
-Tagline!
+Find current and 5-day forecasts in any city with this simple weather finder - data provided by OpenWeatherMap
 
 ## Table of Contents
 
@@ -24,7 +24,7 @@ Provide a short description explaining the what, why, and how of your project. U
 
 ## Deployed Application
 
-
+https://miss-mad.github.io/weather-finder/
 
 ## Installation
 
@@ -34,16 +34,14 @@ No installation necessary.
 
 Below are screenshots of the Horiseon webpage. Visually, it will look very similar, but additional accessible measures have been integrated.
 
-![Weather Dashboard screenshot 1](./assets/images/Horiseon_screenshot_1.JPG)
-![Weather Dashboard screenshot 2]()
-![Weather Dashboard screenshot 3]()
+![Weather Dashboard screenshot 1](./assets/images/weather_dashboard_1.JPG)
+![Weather Dashboard screenshot 2](./assets/images/weather_dashboard_2.JPG)
 
 ## Credits
 
 Collaborators:
 
-
-
+Shawn Canavan - fellow bootcamper
 
 List of resources used:
 
