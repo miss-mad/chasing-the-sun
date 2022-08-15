@@ -16,8 +16,7 @@ function getUserInput(event) {
     return;
   }
 
-  // // places user input in local storage for displaying later
-
+  // calls the saveSearchHistory() function, which places user input in local storage for displaying later
   saveSearchHistory(userInput);
 
   // calls another function, apiCall(), detailed below, and passes in two parameters
@@ -46,6 +45,7 @@ function apiCall(incomingInformationFromMultipleSources, urlType) {
     var lat = incomingInformationFromMultipleSources.coord.lat;
     var lon = incomingInformationFromMultipleSources.coord.lon;
 
+    // clears the formerly searched current weather and 5-day forecast when user searches a new city
     document.getElementById("currentWeather").innerHTML = "";
     document.getElementById("dailyForecast").innerHTML = "";
 
@@ -86,7 +86,6 @@ function apiCall(incomingInformationFromMultipleSources, urlType) {
       // because I went the current weather data (temp, humidity, and wind) to all display at the same time and in the same list as UV Index, the below if statements make the apiCall() function run again to get both sets of data before displaying the future 5-day forecast
       if (urlType === "currentWeather") {
         // city + date appears in bold as title/header
-
         var currentCity = data.name;
         var todaysDate = moment().format("M/D/YYYY");
 
@@ -114,7 +113,6 @@ function apiCall(incomingInformationFromMultipleSources, urlType) {
         });
 
         // jQuery forEach method to loop through the displayDailyForecast() function for each day in the fiveDayForecastArray, which has been filtered down to show only 5 days at 12PM from the original 40 entries
-
         fiveDayForecastArray.forEach(function (day) {
           displayDailyForecast(day);
         });
@@ -132,8 +130,8 @@ function convertTempKToF(temp) {
   return ((temp - 273.15) * 9) / 5 + 32;
 }
 
+// function to display the current weather for the searched city, and this function is called in the fetch API within the apiCall() function above
 function displayCurrentWeather(data) {
-  console.log("TEST", data);
   var userInput = $("#searchInput").val().trim();
   $("#searchInput").val("");
   console.log(userInput);
@@ -194,6 +192,8 @@ function displayCurrentWeather(data) {
       uvIndexColorDiv.css("background-color", "pink");
     }
   }
+
+  // use the uvIndex() function right away by calling it
   uvIndex();
 
   // all created elements must be added on to an existing element in order to display on the page
@@ -279,15 +279,17 @@ function displayDailyForecast(day) {
 
 // function to display past cities that user has searched for by retrieving data from local storage
 function saveSearchHistory(userInput) {
-  console.log("USER INOUT: ", userInput);
+  console.log("USER INPUT: ", userInput);
   var searchHistoryArray = [];
 
   // gets the search input item from local storage
   var localStorageCities = localStorage.getItem("searchHistoryArray");
 
+  // if there's nothing in local storage, set localStorageCities equal to an empty array; otherwise, parse the cities to turn them from strings to objects
   localStorageCities =
     localStorageCities === null ? [] : JSON.parse(localStorageCities);
 
+  // this if statement adds the cities in local storage to an array called searchHistoryArray
   if (
     typeof localStorageCities === "object" &&
     localStorageCities.length >= 1
@@ -295,8 +297,10 @@ function saveSearchHistory(userInput) {
     searchHistoryArray = [...localStorageCities];
   }
 
+  // this array method adds the userInput (city) to the end of the searchHistoryArray array
   searchHistoryArray.push(userInput);
 
+  // sets the searchHistoryArray in local storage and turns array into string
   localStorage.setItem(
     "searchHistoryArray",
     JSON.stringify(searchHistoryArray)
@@ -304,50 +308,55 @@ function saveSearchHistory(userInput) {
 
   console.log("cities: ", searchHistoryArray);
 
+  // calls this function to then display the search history after storing it
   displaySearchHistory();
 }
 
+// function to display the search history on the webpage
 function displaySearchHistory() {
+  // clears the search history text
   document.getElementById("searchHistory").innerHTML = "";
+
+  // retrieves the array from local storage that shows the cities in search history
   var localStorageCities = localStorage.getItem("searchHistoryArray");
+
+  // if there's nothing in local storage, set localStorageCities equal to an empty array; otherwise, parse the cities to turn them from strings to objects
   localStorageCities =
     localStorageCities === null ? [] : JSON.parse(localStorageCities);
 
   console.log("cities: ", localStorageCities);
 
-  // creates the search history display card with jQuery using bootstrap classes
-
+  // jQuery forEach() method to loop through each city in the searchHistoryArray in local storage, add css, and add it to the search history card
   localStorageCities.forEach(function (city) {
+    // selects the html attribute with the matching ID and adds css - this is the search history display card
     var searchHistoryDiv = $("#searchHistory");
     searchHistoryDiv.attr("class", "card text-center");
     searchHistoryDiv.css("width", "18rem");
-
+    
     var searchHistoryButton = $("<button>");
     searchHistoryButton.attr("class", "btn btn-secondary my-2");
     searchHistoryButton.attr("type", "button");
     searchHistoryButton.attr("value", city);
     searchHistoryButton.text(city);
     searchHistoryDiv.append(searchHistoryButton);
+    
+    // makes each search history button clickable and listen for when the user clicks on any of them
+    searchHistoryButton.on("click", displayWeatherFromSearchHistory);
   });
 }
 
+// calls this function to display the search history right away
 displaySearchHistory();
 
 // click listeners on the search button so that the below named functions will execute when user clicks "search"
 mainSearchButton.on("click", getUserInput);
 
+// function to display current and 5-day forecasts again when user clicks a city from the search history list
 function displayWeatherFromSearchHistory(event) {
   console.log(event.target.value);
 
   var clickedCity = event.target.value;
 
+  // calls the apiCall() function to execute again, just as if the user searched a new city in the main search bar
   apiCall(clickedCity, "currentWeather");
 }
-
-var displayWeatherFromSearchHistoryButton =
-  document.querySelectorAll(".btn-secondary");
-console.log(displayWeatherFromSearchHistoryButton);
-
-displayWeatherFromSearchHistoryButton.forEach(function (node) {
-  node.addEventListener("click", displayWeatherFromSearchHistory);
-});
