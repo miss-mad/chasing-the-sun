@@ -1,5 +1,6 @@
 # Weather Dashboard
 Find current and 5-day forecasts in any city with this simple weather finder
+
 Data provided by OpenWeatherMap
 
 ## Table of Contents
