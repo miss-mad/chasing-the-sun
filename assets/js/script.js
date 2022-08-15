@@ -79,7 +79,7 @@ function apiCall(incomingInformationFromMultipleSources, urlType) {
 
     // checks base URL type of the API call to determine which information to display in what order
     .then(function (data) {
-      // console.log("Weather Data: ", data);
+      console.log("Weather Data: ", data);
 
       // because I went the current weather data (temp, humidity, and wind) to all display at the same time and in the same list as UV Index, the below if statements make the apiCall() function run again to get both sets of data before displaying the future 5-day forecast
       if (urlType === "currentWeather") {

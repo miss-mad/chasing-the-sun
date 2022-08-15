@@ -19,4 +19,11 @@ header {
   text-align: center;
 }
 
-/* search bar styles */
+/* text/heading styles */
+#text {
+  color: white;
+  font-weight: bold;
+  font-family: tahoma, Helvetica, sans-serif, sans-serif;
+  font-size: 20px;
+  letter-spacing: 1px;
+}
