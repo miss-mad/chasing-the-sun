@@ -7,7 +7,6 @@ function getUserInput(event) {
 
   // retrieves the text (value) that the user puts into the search bar and trims it (takes out any extra spaces before or after the word(s))
   var userInput = $("#searchInput").val().trim();
-
   console.log(userInput);
 
   if (!userInput) {
@@ -71,7 +70,6 @@ function apiCall(incomingInformationFromMultipleSources, urlType) {
   // using the server-side API Fetch to return the API call
   fetch(queryURL)
     .then(function (response) {
-      console.log(response);
       // this if statement checks if the HTTPS status code dictates that the status is ok (between 200-299) and if not, give the user an error so that they know there is an error
       if (response.ok) {
         return response.json();
@@ -81,7 +79,7 @@ function apiCall(incomingInformationFromMultipleSources, urlType) {
 
     // checks base URL type of the API call to determine which information to display in what order
     .then(function (data) {
-      console.log("Weather Data: ", data);
+      // console.log("Weather Data: ", data);
 
       // because I went the current weather data (temp, humidity, and wind) to all display at the same time and in the same list as UV Index, the below if statements make the apiCall() function run again to get both sets of data before displaying the future 5-day forecast
       if (urlType === "currentWeather") {
@@ -89,14 +87,16 @@ function apiCall(incomingInformationFromMultipleSources, urlType) {
         var currentCity = data.name;
         var todaysDate = moment().format("M/D/YYYY");
 
+        var currentWeatherHeader = $("#currentWeatherTitle");
+        
         var currentWeatherTitle = $("<h3>");
+        currentWeatherHeader.text("");
+
         currentWeatherTitle.css("font-weight", "bold");
         currentWeatherTitle.text(currentCity + " " + todaysDate);
-
-        var currentWeatherHeader = $("#currentWeatherTitle");
-
+        
         currentWeatherHeader.append(currentWeatherTitle);
-
+        
         apiCall(data, "getUVIndex");
       }
 
@@ -306,8 +306,6 @@ function saveSearchHistory(userInput) {
     JSON.stringify(searchHistoryArray)
   );
 
-  console.log("cities: ", searchHistoryArray);
-
   // calls this function to then display the search history after storing it
   displaySearchHistory();
 }
@@ -324,22 +322,20 @@ function displaySearchHistory() {
   localStorageCities =
     localStorageCities === null ? [] : JSON.parse(localStorageCities);
 
-  console.log("cities: ", localStorageCities);
-
   // jQuery forEach() method to loop through each city in the searchHistoryArray in local storage, add css, and add it to the search history card
   localStorageCities.forEach(function (city) {
     // selects the html attribute with the matching ID and adds css - this is the search history display card
     var searchHistoryDiv = $("#searchHistory");
     searchHistoryDiv.attr("class", "card text-center");
     searchHistoryDiv.css("width", "18rem");
-    
+
     var searchHistoryButton = $("<button>");
     searchHistoryButton.attr("class", "btn btn-secondary my-2");
     searchHistoryButton.attr("type", "button");
     searchHistoryButton.attr("value", city);
     searchHistoryButton.text(city);
     searchHistoryDiv.append(searchHistoryButton);
-    
+
     // makes each search history button clickable and listen for when the user clicks on any of them
     searchHistoryButton.on("click", displayWeatherFromSearchHistory);
   });
@@ -347,9 +343,6 @@ function displaySearchHistory() {
 
 // calls this function to display the search history right away
 displaySearchHistory();
-
-// click listeners on the search button so that the below named functions will execute when user clicks "search"
-mainSearchButton.on("click", getUserInput);
 
 // function to display current and 5-day forecasts again when user clicks a city from the search history list
 function displayWeatherFromSearchHistory(event) {
@@ -360,3 +353,6 @@ function displayWeatherFromSearchHistory(event) {
   // calls the apiCall() function to execute again, just as if the user searched a new city in the main search bar
   apiCall(clickedCity, "currentWeather");
 }
+
+// click listener on the main search button so that the named functions will execute when user clicks "search"
+mainSearchButton.on("click", getUserInput);
