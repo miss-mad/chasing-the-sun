@@ -1,5 +1,6 @@
 # Weather Dashboard
-Find current and 5-day forecasts in any city with this simple weather finder - data provided by OpenWeatherMap
+Find current and 5-day forecasts in any city with this simple weather finder
+Data provided by OpenWeatherMap
 
 ## Table of Contents
 
@@ -24,7 +25,7 @@ No installation necessary.
 
 ## Usage
 
-Below are screenshots of the Horiseon webpage. Visually, it will look very similar, but additional accessible measures have been integrated.
+Below are screenshots of the Weather Dashboard webpage.
 
 ![Weather Dashboard screenshot 1](./assets/images/weather_dashboard_1.JPG)
 ![Weather Dashboard screenshot 2](./assets/images/weather_dashboard_2.JPG)
